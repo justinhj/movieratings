@@ -1,0 +1,26 @@
+# rottentomatoes
+
+Clojure code to grab movie ratings from Rotten Tomatoes
+
+## Usage
+
+To find movie ratings for all movies with the text 'jaws' in the title
+
+java -jar rottentomatoes-1.0.0-SNAPSHOT-standalone.jar jaws
+
+## Installation
+
+Recommended route is to use leiningen
+Should work with Eclipse or IntelliJ but I can't help with that
+
+lein deps
+lein uberjar 
+
+## License
+
+Copyright (C) 2011 Justin Heyes-Jones
+
+Distributed under the MIT license
+
+http://creativecommons.org/licenses/MIT/
+
