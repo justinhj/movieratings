@@ -1,4 +1,4 @@
-(defproject rottentomatoes "1.0.0-SNAPSHOT"
+(defproject rottentomatoes "1.0.1-SNAPSHOT"
   :description "Clojure code to grab movie ratings from Rotten Tomatoes"
   :dependencies [
 		 [org.clojure/clojure "1.2.0"]

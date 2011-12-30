@@ -16,6 +16,15 @@ Should work with Eclipse or IntelliJ but I can't help with that
 lein deps
 lein uberjar 
 
+## Emacs/Slime
+
+In a terminal window do 'lein swank' then in emacs do `slime-connect' to start a REPL.
+
+Do M-x slime-eval-buffer in the core.prj file then at a slime REPL do...
+
+(in-ns 'rottentomatoes.core)
+(pmap-get-movie-ratings "aliens")
+
 ## License
 
 Copyright (C) 2011 Justin Heyes-Jones
