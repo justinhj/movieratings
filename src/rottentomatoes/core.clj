@@ -8,7 +8,10 @@
 	[java.lang.Character])
 
 (def *base-url* "http://www.rottentomatoes.com")
-(def *search-end-point* "/search/full_search.php?search=")
+
+(def *search-end-point* "/search/?search=")
+
+;; Example http://www.rottentomatoes.com/search/?search=jaws&sitesearch=rt
 
 (defn first-match-after [re1 re2 seq]
   "Splits the sequence SEQ using RE1 then searches after the first match and before the next match for the first occurence of RE2"
@@ -20,9 +23,14 @@
 
 (defn scoop-url [url]
   "Use the http client to do a GET on the url"
+  (prn url)
   (let [resp (c/GET url)]
-      (c/await resp)
-      [(response-status-code resp) (c/string resp)]))
+    (c/await resp)
+    (if (= 301 (response-status-code resp)) ; redirect
+      (do
+       (prn "page is redirected")
+       [(response-status-code resp) nil])
+      [(response-status-code resp) (c/string resp)])))
 
 ;; Get movie urls
 ;; Does a search of Rotten Tomatoes for the search text, then scrapes the results
@@ -34,14 +42,15 @@
 	[code body] (scoop-url (str *base-url* *search-end-point* encoded-search-text))
 	anchor-text #"<h3 class=\"bottom_divider\">Movies</h3>"
 	]
-    (when (= code 200)
+    (if (= code 200)
       (let [[_ _ after] (s/partition body anchor-text)]
 	(if (nil? after)
 	  (do
 	   (print "ERROR: failed to find required text \"" anchor-text "\"")
 	   nil)
 	  (let [[_ & results] (s/partition after #"\"(/m/.*/)\"")]
-	    (map #(str *base-url* (second %)) (take-nth 2 results))))))))
+	    (map #(str *base-url* (second %)) (take-nth 2 results)))))
+      (prn "IO error " code))))
 
 ;; Given a movie url GET the page then scrape it for the citic and audience rating
 
@@ -79,11 +88,3 @@
       (pmap-get-movie-ratings (first args))
       (println "Done"))
     (println "Enter a search string to match in movie titles")))
-  
-
-
-      
-
-	
-  
-    
