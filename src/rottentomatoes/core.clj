@@ -125,6 +125,9 @@
     (let [ratings (:ratings movie)]
       (printf "movie title: %s\n\tAudience %s\n\tCritics %s\n" (:title movie) (:audience_score ratings) (:critics_score ratings)))))
 
+;; If there's an API KEY then use the Rotten Tomatoes API
+;; otherwise fall back to just scraping the regular
+;; Rotten Tomatoes web pages
 (defn -main [& args]
   (if (= (count args) 1)
     (do
@@ -138,5 +141,6 @@
           (pmap-get-movie-ratings (first args))
           (println "Done"))))
     (println "Enter a search string to match in movie titles")))
+
 
 
