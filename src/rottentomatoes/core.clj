@@ -1,8 +1,14 @@
+;; lein uberjar
+;; java -jar rottentomatoes-1.0.1-SNAPSHOT-standalone.jar jaws
+
 (ns rottentomatoes.core
   (:gen-class)
+  (:use
+   [clojure.string])
   (:require
    [clojure.contrib.str-utils2 :as s] 
-   [http.async.client :as c]))
+   [http.async.client :as c]
+   [cheshire.core :as json]))
 
 (import [java.net URLEncoder]
 	[java.lang.Character])
@@ -10,6 +16,11 @@
 (def *base-url* "http://www.rottentomatoes.com")
 
 (def *search-end-point* "/search/?search=")
+
+;; Rotten Tomatoes API key
+;; Need to set it as an environment variable in your system
+
+(def *API-KEY* (System/getenv "ROTTEN_TOMATOES_API_KEY"))
 
 ;; Example http://www.rottentomatoes.com/search/?search=jaws&sitesearch=rt
 
@@ -23,7 +34,7 @@
 
 (defn scoop-url [url]
   "Use the http client to do a GET on the url"
-  (prn url)
+;  (prn "getting " url) ; debug print
   (let [resp (c/GET url)]
     (c/await resp)
     (if (= 301 (response-status-code resp)) ; redirect
@@ -82,9 +93,35 @@
 	(doseq [[url ratings] url-and-ratings]
 	  (printf "movie url: %s\n\tAudience %s\n\tCritics %s\n" url (:audience ratings) (:critics ratings)))))))
 
+;; The API makes us find the movies query URL before we can start
+
+(defn get-rt-api-url []
+  (let [[code body] (scoop-url (str "http://api.rottentomatoes.com/api/public/v1.0.json?apikey=" *API-KEY*))]
+    (when (= code 200) 
+      (:movies (:links (json/parse-string body true))))))
+
+(defn get-rt-api-template [movies-url]
+  (let [[code body] (scoop-url (str movies-url "?apikey=" *API-KEY*))]
+    (when (= code 200) 
+      (:link_template (json/parse-string body true)))))
+
+(defn get-rt-api-movies [template search]
+  (let [str (clojure.string/replace template "{search-term}" search)
+        str1 (clojure.string/replace str "{results-per-page}" "10")
+        str2 (clojure.string/replace str1 "{page-number}" "10")
+        fin (str "apikey=" *API-KEY*)]
+    fin))
+
 (defn -main [& args]
   (if (= (count args) 1)
     (do
-      (pmap-get-movie-ratings (first args))
-      (println "Done"))
-    (println "Enter a search string to match in movie titles")))
+      (if *API-KEY*
+        (let [movies-url (get-rt-api-url)
+              template (get-rt-api-template movies-url)]
+          (prn template))
+        (do
+          (pmap-get-movie-ratings (first args))
+          (println "Done")))
+      (println "Enter a search string to match in movie titles"))))
+
+
