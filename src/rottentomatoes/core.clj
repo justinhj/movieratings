@@ -9,8 +9,7 @@
    [http.async.client :as c]
    [cheshire.core :as json]))
 
-(import [java.net URLEncoder]
-	[java.lang.Character])
+(import [java.net URLEncoder])
 
 (def *base-url* "http://www.rottentomatoes.com")
 
