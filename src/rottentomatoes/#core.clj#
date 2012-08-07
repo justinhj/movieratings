@@ -121,7 +121,7 @@
           (prn movies))
         (do
           (pmap-get-movie-ratings (first args))
-          (println "Done")))
-      (println "Enter a search string to match in movie titles"))))
+          (println "Done"))))
+    (println "Enter a search string to match in movie titles")))
 
 
