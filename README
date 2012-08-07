@@ -4,9 +4,17 @@ Clojure code to grab movie ratings from Rotten Tomatoes
 
 ## Usage
 
+To use the Rotten Tomatoes API you need to get an API key and then set 
+it as an environment variable on your system. For example:
+
+export ROTTEN_TOMATOES_API_KEY="your key"
+
 To find movie ratings for all movies with the text 'jaws' in the title
 
 java -jar rottentomatoes-1.0.2-SNAPSHOT-standalone.jar jaws
+
+If no api key is found then the program falls back to grabbing the HTML content 
+and scraping the desired values.
 
 ## Installation
 
