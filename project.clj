@@ -4,6 +4,7 @@
 		 [org.clojure/clojure "1.2.0"]
                  [org.clojure/clojure-contrib "1.2.0"]
 		 [http.async.client "0.2.1"]
+                 [cheshire "4.0.1"]
 		 ]
   :main rottentomatoes.core
   :dev-dependencies [
