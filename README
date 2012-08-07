@@ -6,7 +6,7 @@ Clojure code to grab movie ratings from Rotten Tomatoes
 
 To find movie ratings for all movies with the text 'jaws' in the title
 
-java -jar rottentomatoes-1.0.0-SNAPSHOT-standalone.jar jaws
+java -jar rottentomatoes-1.0.2-SNAPSHOT-standalone.jar jaws
 
 ## Installation
 
@@ -23,11 +23,11 @@ In a terminal window do 'lein swank' then in emacs do `slime-connect' to start a
 Do M-x slime-eval-buffer in the core.prj file then at a slime REPL do...
 
 (in-ns 'rottentomatoes.core)
-(pmap-get-movie-ratings "aliens")
+(-main "aliens")
 
 ## License
 
-Copyright (C) 2011 Justin Heyes-Jones
+Copyright (C) 2012 Justin Heyes-Jones
 
 Distributed under the MIT license
 

@@ -1,6 +1,3 @@
-;; lein uberjar
-;; java -jar rottentomatoes-1.0.1-SNAPSHOT-standalone.jar jaws
-
 (ns rottentomatoes.core
   (:gen-class)
   (:require
