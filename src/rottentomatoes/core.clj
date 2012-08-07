@@ -104,12 +104,26 @@
     (when (= code 200) 
       (:link_template (json/parse-string body true)))))
 
-(defn get-rt-api-movies [template search]
-  (let [str0 (cs/replace template "{search-term}" search)
-        str1 (cs/replace str0 "{results-per-page}" "10")
+(defn get-rt-api-movies [template search-term]
+  (let [str0 (cs/replace template "{search-term}" (URLEncoder/encode search-term))
+        str1 (cs/replace str0 "{results-per-page}" "50")
         str2 (cs/replace str1 "{page-number}" "1")
         fin (str str2 "&apikey=" *API-KEY*)]
     fin))
+
+(defn get-rt-movie-data [movie-url]
+  (let [[code body] (scoop-url movie-url)]
+    (if (= code 200)
+      (:movies (json/parse-string body true))
+      nil)))
+
+; total: count , movies [] 
+; ratings: critics_rating, audience_rating
+
+(defn print-rt-movie-data [md]
+  (doseq [movie md]
+    (let [ratings (:ratings movie)]
+      (printf "movie title: %s\n\tAudience %s\n\tCritics %s\n" (:title movie) (:audience_score ratings) (:critics_score ratings)))))
 
 (defn -main [& args]
   (if (= (count args) 1)
@@ -117,11 +131,12 @@
       (if *API-KEY*
         (let [movies-url (get-rt-api-url)
               template (get-rt-api-template movies-url)
-              movies (rottentomatoes.core/get-rt-api-movies template (first args))]
-          (prn movies))
+              movie-search-url (get-rt-api-movies template (first args))
+              movie-data (get-rt-movie-data movie-search-url)]
+          (print-rt-movie-data movie-data))
         (do
           (pmap-get-movie-ratings (first args))
-          (println "Done")))
-      (println "Enter a search string to match in movie titles"))))
+          (println "Done"))))
+    (println "Enter a search string to match in movie titles")))
 
 
