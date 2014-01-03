@@ -1,9 +1,9 @@
-(ns rottentomatoes.core
+(ns movieratings.core
   (:gen-class)
   (:require
    [clojure.string :as cs]
    [http.async.client :as c]
-   [cheshire.core :as json]))
+   [cheshire.core :as cheshire]))
 
 (import [java.net URLEncoder])
 
@@ -110,12 +110,12 @@
 (defn get-rt-api-url []
   (let [[code body] (scoop-url (str "http://api.rottentomatoes.com/api/public/v1.0.json?apikey=" *api-key*))]
     (when (= code 200) 
-      (:movies (:links (json/parse-string body true))))))
+      (:movies (:links (cheshire/parse-string body true))))))
 
 (defn get-rt-api-template [movies-url]
   (let [[code body] (scoop-url (str movies-url "?apikey=" *api-key*))]
     (when (= code 200) 
-      (:link_template (json/parse-string body true)))))
+      (:link_template (cheshire/parse-string body true)))))
 
 (defn get-rt-api-movies [template search-term]
   (let [str0 (cs/replace template "{search-term}" (URLEncoder/encode search-term))
@@ -124,10 +124,18 @@
         fin (str str2 "&apikey=" *api-key*)]
     fin))
 
+;; get the data returned by a movie search URL as Clojure data
 (defn get-rt-movie-data [movie-url]
   (let [[code body] (scoop-url movie-url)]
     (if (= code 200)
-      (:movies (json/parse-string body true))
+      (:movies (cheshire/parse-string body true))
+      nil)))
+
+;; get the data returned by a movie search URL as JSON
+(defn get-rt-movie-data-json [movie-url]
+  (let [[code body] (scoop-url movie-url)]
+    (if (= code 200)
+      body
       nil)))
 
 ; total: count , movies [] 
