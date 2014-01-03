@@ -11,7 +11,7 @@ export ROTTEN_TOMATOES_API_KEY="your key"
 
 To find movie ratings for all movies with the text 'jaws' in the title
 
-lein run "jaws"
+    lein run "jaws"
 
 If no api key is found then the program falls back to grabbing the HTML content 
 and scraping the desired values.
@@ -20,17 +20,17 @@ and scraping the desired values.
 
 Requires lein 2
 
-lein deps
-lein uberjar 
+    lein deps
+    lein uberjar 
 
 ## Using from emacs
 
-I use cider from emacs packages. 
+Currently I use cider from emacs packages
 
-M-x cider-jack-in
+    M-x cider-jack-in
 
-(in-ns 'movieratings.core)
-(-main "aliens")
+    (in-ns 'movieratings.core)
+    (-main "aliens")
 
 ## License
 
