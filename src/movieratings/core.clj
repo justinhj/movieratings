@@ -26,14 +26,16 @@
 (defn first-match-after [re1 re2 seq]
   "Splits the sequence SEQ using RE1 then searches after the first match and before the next match for the first occurence of RE2"
   (let [[_ _ after] (cs/split seq re1)] ;;; note changed s/partition to split
-    (re-find re2 after))) 
+    (if after
+     (re-find re2 after)
+     nil)))
 
 (defn response-status-code [resp]
   (:code (c/status resp)))
 
 (defn scoop-url [url]
   "Use the http client to do a GET on the url"
-  (println "getting " url) ; debug print
+;;  (println "getting " url) ; debug print
   (let [resp (c/GET http-client url)
         code (:code (c/status resp))
 ;;        headers (c/headers resp)
@@ -58,7 +60,9 @@
 ;; Get movie urls
 ;; Does a search of Rotten Tomatoes for the search text, then scrapes the results
 ;; for the page for each movie. Returns a collection of the movie urls
-;; TODO need a logging interface for the warning
+;; TODO need a better way to handle errors
+;; there are network errors and scraping errors if the page changes
+;; perhaps the double return code of [err, result] 
 
 (defn get-movie-urls [search-text]
   (let [encoded-search-text (URLEncoder/encode search-text)
@@ -71,9 +75,9 @@
 	  (do
 	   (print "ERROR: failed to find required text \"" anchor-text "\"")
 	   nil)
-	  (let [[_ & results] (cs/split after #"\"(/m/.*/)\"")]
-	    (map #(str base-url (second %)) (take-nth 2 results)))))
-      (println "IO error " code))))
+	  (let [movie-urls (re-seq #"\"(/m/.*/)\"" after)]
+	    (reduce #(conj %1 %2) #{} (map #(str base-url (second %)) movie-urls)))))
+      (println "HTTP request failed with code " code))))
 
 ;; Given a movie url GET the page then scrape it for the citic and audience rating
 
@@ -160,10 +164,8 @@
               movie-data (get-rt-movie-data movie-search-url)]
           (print-rt-movie-data movie-data))
         (do
-          (println "Web scraping method disabled due to html format change")
-          (println "Please obtain an API key and set it as the environmment variable ROTTEN_TOMATOES_API_KEY")
-;;          (println "Using web scraping method")
-;;          (pmap-get-movie-ratings (first args))
-;;          (println "Done")))
-          )))
+          (println "Using web scraping method")
+          (pmap-get-movie-ratings (first args))
+          (println "Done"))))
     (println "Enter a search string to match in movie titles")))
+
