@@ -142,6 +142,18 @@
       body
       nil)))
 
+;; pass in the similar link from a movie json search response
+;; not this is not the recommended way of doing this
+;; TODO use the template system, write a nice way to fill out the template
+;; also write a memoize class with timeout so they're only looked up once
+;; in a while
+(defn get-rt-similar-movie-data-json [rt-movie-id]
+  (let [url (str "http://api.rottentomatoes.com/api/public/v1.0/movies/" rt-movie-id "/similar?apikey=" *api-key*)
+        [code body] (scoop-url url)]
+    (if (= code 200)
+      body
+      nil)))
+
 ; total: count , movies [] 
 ; ratings: critics_rating, audience_rating
 
