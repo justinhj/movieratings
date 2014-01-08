@@ -1,4 +1,4 @@
-(defproject justinhj/movieratings "1.0.5-SNAPSHOT"
+(defproject justinhj/movieratings "1.0.6-SNAPSHOT"
   :description "Clojure code to grab movie ratings from Rotten Tomatoes using their API or screen scraping if no api key is found"
   :min-lein-version "2.0.0"
   :dependencies [
