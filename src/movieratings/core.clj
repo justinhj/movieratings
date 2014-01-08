@@ -2,8 +2,10 @@
   (:gen-class)
   (:require
    [clojure.string :as cs]
-   [http.async.client :as c]
-   [cheshire.core :as cheshire]))
+   [clj-http.client :as client]
+   [cheshire.core :as cheshire])
+  (:use 
+   [slingshot.slingshot :only [throw+ try+]]))
 
 (import [java.net URLEncoder])
 
@@ -19,8 +21,6 @@
 ;; note if you're not able to set an environment variable can fix at runtime for example like this:
 ;; (binding [*api-key* "YOUR KEY HERE"] (-main "jaws"))
 
-(def http-client (c/create-client :compression-enabled true))
-
 ;; Example http://www.rottentomatoes.com/search/?search=jaws&sitesearch=rt
 
 (defn first-match-after [re1 re2 seq]
@@ -30,32 +30,16 @@
      (re-find re2 after)
      nil)))
 
-(defn response-status-code [resp]
-  (:code (c/status resp)))
-
 (defn scoop-url [url]
-  "Use the http client to do a GET on the url"
-;;  (println "getting " url) ; debug print
-  (let [resp (c/GET http-client url)
-        code (:code (c/status resp))
-;;        headers (c/headers resp)
-;;        content-type (c/content-type resp)
-        body (-> resp
-        c/await c/string)]
-;;    (println "code " code)
-;;    (println "headers " headers)
-;;    (println "content-type " content-type)
-    (if (not= code 200)
-      (do
-;;        (println "Response returned code " code)
-        [(response-status-code resp) nil])
-      (if (nil? body)
-        (do
-;;          (println "Response returned empty body")
-          [(response-status-code resp) nil])
-        (do
-;;          (println "Response" body) ;;  (c/string body))
-          [(response-status-code resp) body])))))
+  "Use the http client to do a GET on the url and return the http response code and the body or nil"
+  "Note that you'll get nil as the status code if for example there is no network connection and you get UnknownHostException"
+  (try+
+   (let [r (client/get url)
+         code (:status r)
+         body (:body r)]
+     [code body])
+   (catch Object o
+     [(:status o) nil])))
 
 ;; Get movie urls
 ;; Does a search of Rotten Tomatoes for the search text, then scrapes the results
@@ -180,4 +164,3 @@
           (pmap-get-movie-ratings (first args))
           (println "Done"))))
     (println "Enter a search string to match in movie titles")))
-

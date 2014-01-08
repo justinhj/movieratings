@@ -3,7 +3,7 @@
   :min-lein-version "2.0.0"
   :dependencies [
 		 [org.clojure/clojure "1.5.1"]
-		 [http.async.client "0.5.2"]
+                 [clj-http "0.7.8"]
                  [cheshire "5.3.0"]
 		 ]
   :main movieratings.core)
