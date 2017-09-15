@@ -24,8 +24,8 @@ and scraping the desired values.
 
 Requires lein 2
 
-```    lein deps
-    lein uberjar ```
+    lein deps
+    lein uberjar
 
 ## Using from emacs
 
