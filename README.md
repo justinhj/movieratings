@@ -9,9 +9,13 @@ it as an environment variable on your system. For example:
 
 export ROTTEN_TOMATOES_API_KEY="your key"
 
+Install Clojure's build tool Leiningen
+
+`https://leiningen.org/`
+
 To find movie ratings for all movies with the text 'jaws' in the title
 
-    lein run "jaws"
+`lein run "jaws"`
 
 If no api key is found then the program falls back to grabbing the HTML content 
 and scraping the desired values.
@@ -20,8 +24,8 @@ and scraping the desired values.
 
 Requires lein 2
 
-    lein deps
-    lein uberjar 
+```    lein deps
+    lein uberjar ```
 
 ## Using from emacs
 
